@@ -12,4 +12,9 @@ class Date extends Model
     protected $fillable = [
         'date',
     ];
+
+    public function history()
+    {
+        return $this->belongsTo(History::class);
+    }
 }

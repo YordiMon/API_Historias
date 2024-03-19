@@ -12,4 +12,9 @@ class Content extends Model
     protected $fillable = [
         'content',
     ];
+
+    public function history()
+    {
+        return $this->hasMany('App\History');
+    }
 }

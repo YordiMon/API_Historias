@@ -10,6 +10,11 @@ class Genre extends Model
     use HasFactory;
 
     protected $fillable = [
-        'genre',
+        'genres',
     ];
+
+    public function history()
+    {
+        return $this->belongsTo(History::class);
+    }
 }

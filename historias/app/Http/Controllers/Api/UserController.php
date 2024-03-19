@@ -18,7 +18,6 @@ class UserController extends Controller
                 "user" => $user->name,
                 "email" => $user->email,
                 "email_verified_at" => $user->email_verified_at,
-                "password" => $user->password,
                 "remember_token" => $user->remember_token,
                 "created" => $user->created_at,
                 "updated" => $user->updated_at
@@ -35,10 +34,10 @@ class UserController extends Controller
 
         $object = [
             "id" => $user->id,
-            "user" => $user->name,
+            "name" => $user->name,
+            "bio" => $user->bio,
             "email" => $user->email,
             "email_verified_at" => $user->email_verified_at,
-            "password" => $user->password,
             "remember_token" => $user->remember_token,
             "created" => $user->created_at,
             "updated" => $user->updated_at
@@ -46,6 +45,25 @@ class UserController extends Controller
 
         return response()->json($object);
     }
+
+    public function searchUserByName($name) {
+        // Busca usuarios cuyo nombre contenga la cadena especificada
+        $users = User::where('name', 'LIKE', '%' . $name . '%')->get();
+    
+        // Prepara la respuesta JSON
+        $userList = [];
+        foreach ($users as $user) {
+            $userList[] = [
+                "id" => $user->id,
+                "name" => $user->name,
+                "bio" => $user->bio,
+                "email" => $user->email,
+            ];
+        }
+    
+        return response()->json($userList);
+    }
+    
 
     public function create(Request $request) {
         $data = $request->validate([
@@ -70,4 +88,51 @@ class UserController extends Controller
             ;
         }
     }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id' => 'required', // Añadir validación para el campo 'id'
+            'name' => 'required',
+            'email' => 'required|email',
+            'bio' => 'required',
+            'password' => 'required|min:8',
+        ]);
+    
+        // Verificar si se proporcionó un ID en la solicitud
+        if (!isset($data['id'])) {
+            $object = [
+                "response" => "Error: se requiere el campo 'id' para actualizar el registro.",
+            ];
+            return response()->json($object);
+        }
+    
+        $user = User::find($data['id']);
+    
+        if($user) {
+            // Actualizar las propiedades del usuario correctamente
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            $user->bio = $data['bio'];
+            $user->password = $data['password'];
+    
+            if ($user->save()) { // Cambiar a minúsculas para el método save()
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $user,
+                ];
+                return response()->json($object);
+            } else {
+                $object = [
+                    "response" => "Error: algo salió mal, por favor inténtalo de nuevo.",
+                ];
+                return response()->json($object);
+            }
+        } else {
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+            return response()->json($object);
+        }
+    }
+    
 }

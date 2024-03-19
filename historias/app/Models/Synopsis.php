@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Contributor extends Model
+class Synopsis extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'contributor',
-        'option_id',
-    ];
+
+    public function history()
+    {
+        return $this->belongsTo(History::class);
+    }
 }

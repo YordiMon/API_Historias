@@ -15,8 +15,7 @@ class ContributorController extends Controller
         foreach($contributors as $contributor) {
             $object = [
                 "id" => $contributor->id,
-                "contributor" => $contributor->contributor,
-                "option_id" => $contributor->option_id,
+                "id_user" => $contributor->user_id,
                 "created" => $contributor->created_at,
                 "updated" => $contributor->updated_at
             ];
@@ -32,8 +31,7 @@ class ContributorController extends Controller
 
         $object = [
             "id" => $contributor->id,
-            "contributor" => $contributor->contributor,
-            "option_id" => $contributor->option_id,
+            "id_user" => $contributor->id_user,
             "created" => $contributor->created_at,
             "updated" => $contributor->updated_at
         ];
@@ -43,13 +41,11 @@ class ContributorController extends Controller
 
     public function create(Request $request) {
         $data = $request->validate([
-            'contributor'=>'required|min:3|max:30',
-            'option_id'=>'required|numeric|min:1',
+            'id_user'=>'required|min:1|integer',
         ]);
 
         $contributor = Contributor::create([
-            'contributor'=>$data['contributor'],
-            'option_id'=>$data['option_id'],
+            'id_user'=>$data['id_user'],
         ]);
 
         if ($concontributortent) {
@@ -61,6 +57,45 @@ class ContributorController extends Controller
             return response()->json([
                 'message' => 'Operación exitosa',
             ]);       
+        }
+    }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id'=>'required|integer|min:1',
+            'id_user'=>'required|min:1|integer',
+        ]);
+
+        $contributor = Contributor::where('id', '=', $data['id'])->first();
+
+        if($contributor) {
+
+            $old = $contributor;
+            $contributor->contributor = $data['id_user'];
+
+            if ($contributor->Save()) {
+    
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $contributor,
+                ];
+    
+                return response()->json($object);
+            } else {
+    
+                $object = [
+                    "response" => "Error: algo fue mal, porfavor intenta de nuevo.",
+                ];
+    
+                return response()->json($object);
+            }
+        } else {
+
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+
+            return response()->json($object);
         }
     }
 }

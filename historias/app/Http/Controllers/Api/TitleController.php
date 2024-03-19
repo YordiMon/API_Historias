@@ -9,15 +9,16 @@ use App\Models\Title;
 class TitleController extends Controller
 {
     public function list() {
-        $titles = Title::all();
+        $contributors = Contributor::all();
         $list = [];
 
-        foreach($titles as $title) {
+        foreach($contributors as $contributor) {
             $object = [
-                "id" => $title->id,
-                "title" => $title->title,
-                "created" => $title->created_at,
-                "updated" => $title->updated_at
+                "id" => $contributor->id,
+                "contributor" => $contributor->contributor,
+                "option_id" => $contributor->option_id,
+                "created" => $contributor->created_at,
+                "updated" => $contributor->updated_at
             ];
 
             array_push($list, $object);
@@ -27,13 +28,14 @@ class TitleController extends Controller
     }
 
     public function id($id) {
-        $title = Title::where('id', '=', $id)->first();
+        $contributor = Contributor::where('id', '=', $id)->first();
 
         $object = [
-            "id" => $title->id,
-            "title" => $title->title,
-            "created" => $title->created_at,
-            "uptitled" => $title->uptitled_at
+            "id" => $contributor->id,
+            "contributor" => $contributor->contributor,
+            "option_id" => $contributor->option_id,
+            "created" => $contributor->created_at,
+            "updated" => $contributor->updated_at
         ];
 
         return response()->json($object);
@@ -41,22 +43,63 @@ class TitleController extends Controller
 
     public function create(Request $request) {
         $data = $request->validate([
-            'title'=>'required|min:3|max:30',
+            'contributor'=>'required|min:3|max:30',
+            'option_id'=>'required|numeric|min:1',
         ]);
 
-        $title = Title::create([
-            'title'=>$data['title'],
+        $contributor = Contributor::create([
+            'contributor'=>$data['contributor'],
+            'option_id'=>$data['option_id'],
         ]);
 
-        if ($title) {
+        if ($concontributortent) {
             return response()->json([
                 'message' => 'Operación exitosa',
-                'data' => $title,
+                'data' => $contributor,
             ]);
         } else {
             return response()->json([
                 'message' => 'Operación exitosa',
             ]);       
+        }
+    }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id'=>'required|integer|min:1',
+            'genre'=>'required|min:3|max:30',
+        ]);
+
+        $genre = Genre::where('id', '=', $data['id'])->first();
+
+        if($genre) {
+
+            $old = $genre;
+            $genre->genre = $data['genre'];
+
+            if ($genre->Save()) {
+    
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $genre,
+                ];
+    
+                return response()->json($object);
+            } else {
+    
+                $object = [
+                    "response" => "Error: algo fue mal, porfavor intenta de nuevo.",
+                ];
+    
+                return response()->json($object);
+            }
+        } else {
+
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+
+            return response()->json($object);
         }
     }
 }

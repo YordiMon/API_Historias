@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Genre;
 use Illuminate\Http\Request;
+use App\Models\Genre;
 
 class GenreController extends Controller
 {
@@ -15,7 +15,7 @@ class GenreController extends Controller
         foreach($genres as $genre) {
             $object = [
                 "id" => $genre->id,
-                "genre" => $genre->genre,
+                "genres" => $genre->genres,
                 "created" => $genre->created_at,
                 "updated" => $genre->updated_at
             ];
@@ -31,7 +31,7 @@ class GenreController extends Controller
 
         $object = [
             "id" => $genre->id,
-            "genre" => $genre->genre,
+            "genres" => $genre->genres,
             "created" => $genre->created_at,
             "updated" => $genre->updated_at
         ];
@@ -41,11 +41,11 @@ class GenreController extends Controller
 
     public function create(Request $request) {
         $data = $request->validate([
-            'genre'=>'required|min:3|max:30',
+            'genres'=>'required|min:3|max:30',
         ]);
 
-        $genre = Genre::create([
-            'genre'=>$data['genre'],
+        $genre = genre::create([
+            'genres'=>$data['genres'],
         ]);
 
         if ($genre) {
@@ -57,6 +57,45 @@ class GenreController extends Controller
             return response()->json([
                 'message' => 'Operación exitosa',
             ]);       
+        }
+    }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id'=>'required|integer|min:1',
+            'genres'=>'required|min:3|max:30',
+        ]);
+
+        $genre = Genre::where('id', '=', $data['id'])->first();
+
+        if($genre) {
+
+            $old = $genre;
+            $genre->genre = $data['genres'];
+
+            if ($genre->Save()) {
+    
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $genre,
+                ];
+    
+                return response()->json($object);
+            } else {
+    
+                $object = [
+                    "response" => "Error: algo fue mal, porfavor intenta de nuevo.",
+                ];
+    
+                return response()->json($object);
+            }
+        } else {
+
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+
+            return response()->json($object);
         }
     }
 }

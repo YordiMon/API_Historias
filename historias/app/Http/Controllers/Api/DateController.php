@@ -41,7 +41,7 @@ class DateController extends Controller
 
     public function create(Request $request) {
         $data = $request->validate([
-            'date'=>'required|min:10',
+            'date'=>'required|min:3|max:30',
         ]);
 
         $date = Date::create([
@@ -57,6 +57,45 @@ class DateController extends Controller
             return response()->json([
                 'message' => 'Operación exitosa',
             ]);       
+        }
+    }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id'=>'required|integer|min:1',
+            'date'=>'required|min:3|max:30',
+        ]);
+
+        $date = Date::where('id', '=', $data['id'])->first();
+
+        if($date) {
+
+            $old = $date;
+            $date->date = $data['date'];
+
+            if ($date->Save()) {
+    
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $genre,
+                ];
+    
+                return response()->json($object);
+            } else {
+    
+                $object = [
+                    "response" => "Error: algo fue mal, porfavor intenta de nuevo.",
+                ];
+    
+                return response()->json($object);
+            }
+        } else {
+
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+
+            return response()->json($object);
         }
     }
 }

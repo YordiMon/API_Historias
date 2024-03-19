@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Content;
+use App\Models\content;
 
-class ContentController extends Controller
+class contentController extends Controller
 {
     public function list() {
-        $contents = Content::all();
+        $contents = content::all();
         $list = [];
 
         foreach($contents as $content) {
@@ -27,7 +27,7 @@ class ContentController extends Controller
     }
 
     public function id($id) {
-        $content = Content::where('id', '=', $id)->first();
+        $content = content::where('id', '=', $id)->first();
 
         $object = [
             "id" => $content->id,
@@ -44,7 +44,7 @@ class ContentController extends Controller
             'content'=>'required|min:3|max:999',
         ]);
 
-        $content = Content::create([
+        $content = content::create([
             'content'=>$data['content'],
         ]);
 
@@ -57,6 +57,45 @@ class ContentController extends Controller
             return response()->json([
                 'message' => 'Operación exitosa',
             ]);       
+        }
+    }
+
+    public function update(Request $request) {
+        $data = $request->validate([
+            'id'=>'required|integer|min:1',
+            'content'=>'required|min:3|max:30',
+        ]);
+
+        $content = content::where('id', '=', $data['id'])->first();
+
+        if($content) {
+
+            $old = $content;
+            $content->content = $data['content'];
+
+            if ($content->Save()) {
+    
+                $object = [
+                    "response" => "Éxito: registro modificado correctamente.",
+                    "data" => $content,
+                ];
+    
+                return response()->json($object);
+            } else {
+    
+                $object = [
+                    "response" => "Error: algo fue mal, porfavor intenta de nuevo.",
+                ];
+    
+                return response()->json($object);
+            }
+        } else {
+
+            $object = [
+                "response" => "Error: registro no encontrado.",
+            ];
+
+            return response()->json($object);
         }
     }
 }
