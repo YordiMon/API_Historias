@@ -105,5 +105,8 @@ Route::post('/like', [LikeController::class, 'like']);
 Route::post('/save', [SaveController::class, 'save']);
 
 Route::get('/branch/{id}', [BranchController::class, 'getBranchesByHistoryId']);
+Route::post('/cbranch', [BranchController::class, 'create']);
+
 Route::post('/chistory', [HistoryController::class, 'store']);
+Route::post('/cshistory', [HistoryController::class, 'storeDrafts']);
 

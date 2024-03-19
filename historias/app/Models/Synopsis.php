@@ -9,6 +9,8 @@ class Synopsis extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['synopsis'];
+    
     public function history()
     {
         return $this->belongsTo(History::class);

@@ -17,6 +17,92 @@ use App\Models\Synopsis;
 
 class HistoryController extends Controller
 {
+    public function storeDrafts(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'content' => 'required|string',
+            'genre_id' => 'required|exists:genres,id',
+            'date' => 'required|date_format:Y-m-d',
+            'user_id' => 'required|exists:users,id',
+            'synopsis' => 'required|string',
+        ]);
+
+        try {
+            \DB::beginTransaction();
+
+            $title = Title::firstOrCreate(['title' => $request->title]);
+
+            $content = Content::firstOrCreate(['content' => $request->content]);
+
+            $synopsis = Synopsis::firstOrCreate(['synopsis' => $request->synopsis]);
+
+            $date = Date::firstOrCreate(['date' => $request->date]);
+
+            $history = new History();
+            $history->title_id = $title->id;
+            $history->content_id = $content->id;
+            $history->genre_id = $request->genre_id;
+            $history->date_id = $date->id;
+            $history->user_id = $request->user_id;
+            $history->synopsis_id = $synopsis->id;
+            $history->save();
+
+            $draft = new Draft();
+            $draft->user_id = $request->user_id;
+            $draft->history_id = $history->id;
+            $draft->save();
+
+            \DB::commit();
+
+            return response()->json(['mensaje' => 'Historia creada y guardada como borrador exitosamente'], 201);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response()->json(['mensaje' => 'Error al crear y guardar la historia como borrador: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string',
+            'content' => 'required|string',
+            'genre_id' => 'required|exists:genres,id',
+            'date' => 'required|date_format:Y-m-d',
+            'user_id' => 'required|exists:users,id',
+            'synopsis' => 'required|string',
+        ]);
+
+        try {
+            \DB::beginTransaction();
+
+            $title = Title::firstOrCreate(['title' => $request->title]);
+
+            $content = Content::firstOrCreate(['content' => $request->content]);
+
+            $synopsis = Synopsis::firstOrCreate(['synopsis' => $request->synopsis]);
+
+            $date = Date::firstOrCreate(['date' => $request->date]);
+
+            $history = new History();
+            $history->title_id = $title->id;
+            $history->content_id = $content->id;
+            $history->genre_id = $request->genre_id;
+            $history->date_id = $date->id;
+            $history->user_id = $request->user_id;
+            $history->synopsis_id = $synopsis->id;
+            $history->save();
+
+            \DB::commit();
+
+            return response()->json(['mensaje' => 'Historia creada exitosamente'], 201);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response()->json(['mensaje' => 'Error al crear la historia: ' . $e->getMessage()], 500);
+        }
+    }
 
     public function list() {
         $histories = History::whereNotIn('id', function($query) {
