@@ -91,14 +91,13 @@ class UserController extends Controller
 
     public function update(Request $request) {
         $data = $request->validate([
-            'id' => 'required', // Añadir validación para el campo 'id'
+            'id' => 'required',
             'name' => 'required',
             'email' => 'required|email',
             'bio' => 'required',
             'password' => 'required|min:8',
         ]);
     
-        // Verificar si se proporcionó un ID en la solicitud
         if (!isset($data['id'])) {
             $object = [
                 "response" => "Error: se requiere el campo 'id' para actualizar el registro.",
@@ -109,13 +108,12 @@ class UserController extends Controller
         $user = User::find($data['id']);
     
         if($user) {
-            // Actualizar las propiedades del usuario correctamente
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->bio = $data['bio'];
             $user->password = $data['password'];
     
-            if ($user->save()) { // Cambiar a minúsculas para el método save()
+            if ($user->save()) {
                 $object = [
                     "response" => "Éxito: registro modificado correctamente.",
                     "data" => $user,

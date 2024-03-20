@@ -14,12 +14,12 @@ return new class extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('title_id')->constrained('titles');
-            $table->foreignId('content_id')->constrained('contents');
-            $table->foreignId('genre_id')->constrained('genres');
-            $table->foreignId('date_id')->constrained('dates');
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('synopsis_id')->constrained('synopses');
+            $table->integer('title_id');
+            $table->integer('content_id');
+            $table->integer('genre_id');
+            $table->integer('date_id');
+            $table->integer('user_id');
+            $table->integer('synopsis_id');
             $table->timestamps();
         });
 

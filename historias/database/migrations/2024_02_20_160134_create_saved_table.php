@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('saved', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('history_id')->constrained('histories');
+            $table->integer('user_id');
+            $table->integer('history_id');
             $table->timestamps();
         });
 
