@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\SaveController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\DraftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +39,7 @@ Route::post('/register', [AuthController::class, 'register']);
 
 // Rutas de los generos
 Route::get('/genres', [GenreController::class, 'list']);
-Route::get('/genres/{id}', [GenreController::class, 'id']);
+Route::get('/lgenres/{id}', [GenreController::class, 'id']);
 Route::POST('/cgenres', [GenreController::class, 'create']);
 Route::POST('/ugenres/{id}', [GenreController::class, 'update']);
 
@@ -108,5 +109,7 @@ Route::get('/branch/{id}', [BranchController::class, 'getBranchesByHistoryId']);
 Route::post('/cbranch', [BranchController::class, 'create']);
 
 Route::post('/chistory', [HistoryController::class, 'store']);
-Route::post('/cshistory', [HistoryController::class, 'storeDrafts']);
+Route::post('/cdhistory', [HistoryController::class, 'storeDrafts']);
+Route::post('/dfdah-history', [HistoryController::class, 'deleteFromDraftsAndHistories']);
 
+Route::post('/ddraft/{id}', [DraftController::class, 'deleteDraft']);

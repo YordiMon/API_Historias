@@ -32,11 +32,8 @@ class HistoryController extends Controller
             \DB::beginTransaction();
 
             $title = Title::firstOrCreate(['title' => $request->title]);
-
             $content = Content::firstOrCreate(['content' => $request->content]);
-
             $synopsis = Synopsis::firstOrCreate(['synopsis' => $request->synopsis]);
-
             $date = Date::firstOrCreate(['date' => $request->date]);
 
             $history = new History();
@@ -55,13 +52,14 @@ class HistoryController extends Controller
 
             \DB::commit();
 
-            return response()->json(['mensaje' => 'Historia creada y guardada como borrador exitosamente'], 201);
+            return response()->json(['mensaje' => 'Historia creada y guardada como borrador exitosamente', 'history_id' => $history->id], 201);
         } catch (\Exception $e) {
             \DB::rollback();
 
             return response()->json(['mensaje' => 'Error al crear y guardar la historia como borrador: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function store(Request $request)
     {
@@ -331,4 +329,27 @@ class HistoryController extends Controller
     
         return response()->json($response);
     }    
+
+    public function deleteFromDraftsAndHistories(Request $request)
+    {
+        $request->validate([
+            'history_id' => 'required|exists:histories,id',
+        ]);
+
+        try {
+            \DB::beginTransaction();
+
+            Draft::where('history_id', $request->history_id)->delete();
+
+            History::where('id', $request->history_id)->delete();
+
+            \DB::commit();
+
+            return response()->json(['mensaje' => 'Historia y borrador eliminados exitosamente'], 200);
+        } catch (\Exception $e) {
+            \DB::rollback();
+
+            return response()->json(['mensaje' => 'Error al eliminar la historia y el borrador: ' . $e->getMessage()], 500);
+        }
+    }
 }

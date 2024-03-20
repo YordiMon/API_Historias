@@ -15,7 +15,7 @@ class GenreController extends Controller
         foreach($genres as $genre) {
             $object = [
                 "id" => $genre->id,
-                "genres" => $genre->genres,
+                "genre" => $genre->name,
                 "created" => $genre->created_at,
                 "updated" => $genre->updated_at
             ];
